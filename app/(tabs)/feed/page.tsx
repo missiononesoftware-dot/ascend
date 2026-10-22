@@ -45,7 +45,10 @@ export default function Feed() {
     setLoading(false);
   }, [router]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    // Start the fetch in a microtask so setState is not synchronous in the effect.
+    void Promise.resolve().then(() => { void load(); });
+  }, [load]);
 
   async function swipe(direction: "left" | "right" | "super") {
     if (!me || deck.length === 0 || busyRef.current) return;

@@ -34,7 +34,10 @@ export default function Chat() {
     setMessages((msgs ?? []) as Message[]);
   }, [matchId, router]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    // Start the fetch in a microtask so setState is not synchronous in the effect.
+    void Promise.resolve().then(() => { void load(); });
+  }, [load]);
 
   // Supabase Realtime: live 1:1 channel per match
   useEffect(() => {
