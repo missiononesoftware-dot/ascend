@@ -16,7 +16,6 @@ interface Row {
 export default function Meetings() {
   const router = useRouter();
   const [rows, setRows] = useState<Row[]>([]);
-  const [uid, setUid] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [justBooked, setJustBooked] = useState<string | null>(null);
 
@@ -25,7 +24,6 @@ export default function Meetings() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) return router.replace("/welcome");
     const myId = session.user.id;
-    setUid(myId);
 
     const { data: matches } = await sb.from("matches").select("*");
     const matchList = (matches ?? []) as Match[];
@@ -53,7 +51,10 @@ export default function Meetings() {
     setLoading(false);
   }, [router]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    // Start the fetch in a microtask so setState is not synchronous in the effect.
+    void Promise.resolve().then(() => { void load(); });
+  }, [load]);
 
   async function approve(row: Row) {
     const sb = supabase();

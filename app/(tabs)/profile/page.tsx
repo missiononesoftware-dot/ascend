@@ -27,7 +27,10 @@ export default function ProfilePage() {
     setIntents(p.open_to);
   }, [router]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    // Start the fetch in a microtask so setState is not synchronous in the effect.
+    void Promise.resolve().then(() => { void load(); });
+  }, [load]);
 
   async function save() {
     if (!profile) return;

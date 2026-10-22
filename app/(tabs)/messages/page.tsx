@@ -60,7 +60,10 @@ export default function Messages() {
     setLoading(false);
   }, [router]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    // Start the fetch in a microtask so setState is not synchronous in the effect.
+    void Promise.resolve().then(() => { void load(); });
+  }, [load]);
 
   if (loading) return <div className="flex flex-1 items-center justify-center text-dim">Loading…</div>;
 

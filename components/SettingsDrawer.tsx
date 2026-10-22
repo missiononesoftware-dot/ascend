@@ -23,7 +23,10 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   const [pushMeetings, setPushMeetings] = useState(true);
 
   useEffect(() => {
-    setLight(document.documentElement.getAttribute("data-theme") === "light");
+    // Read the DOM theme in a microtask so setState is not synchronous in the effect.
+    queueMicrotask(() => {
+      setLight(document.documentElement.getAttribute("data-theme") === "light");
+    });
   }, [open]);
 
   function setTheme(l: boolean) {
